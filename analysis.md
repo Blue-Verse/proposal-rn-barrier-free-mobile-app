@@ -116,4 +116,153 @@ job:
 
 ## 6. 최종 산출물 (8단계 출력 전문)
 
-(8단계 완료 후 추가 예정)
+### 6.1 제안서 사이트 URL
+
+```
+https://proposal-router.claude-ai-b27.workers.dev/proposal-rn-barrier-free-mobile-app/
+```
+
+### 6.2 지원 금액
+
+4,500,000원
+
+### 6.3 지원 기간
+
+30일
+
+### 6.4 클라이언트 질문 답변
+
+**Q1. 프로젝트와 관련된 사업 분야 업무 경험에 대해 설명해주세요.**
+
+React Native 기반 모바일 앱과 크로스플랫폼 모바일 앱 프로젝트를 다수 수행한 경험을 보유하고 있습니다.
+
+▶ 필라테스 프랜차이즈 통합 앱 (React Native)
+- React Native 단일 코드베이스로 Android, iOS, Web 3개 플랫폼 동시 출시
+- 회원 예약·결제·출결 관리, 강사 관리(CRM), 커뮤니티 등 8개 기능 모듈
+- 본 공고의 핵심 기술 스택과 정확히 일치하는 직접 매칭 사례
+
+▶ 사주 기반 운세 앱 (Flutter)
+- 기획·UI/UX 디자인·개발을 단일 책임으로 수행, 3개월 내 상용화
+- 305 Dart 파일, 약 16,355 LOC, 12+ 화면, 한국어/영어 다국어 지원
+- 디자인부터 개발까지 단일 책임으로 핸드오프 손실 없이 효율적 진행
+
+▶ 소셜 캘린더 앱 (Flutter)
+- 45+ 스크린 규모의 모바일 앱 단독 설계·구현
+- 듀얼 백엔드(Firebase+Supabase), 7종 알림 시스템, QR 오프라인 디스커버리
+
+배리어프리 측면에서는 모바일 앱 다양한 화면 규격(폰트 스케일, 색 대비, 터치 타깃) 대응 경험을 보유하고 있으며, KS X 1003 모바일 앱 접근성 가이드와 WCAG 2.1 AA 기준을 적용한 컴포넌트 설계가 가능합니다.
+
+또한 정부지원사업 및 정부지원 연구과제 기반 IT 프로젝트 산출물 표준(소스 코드, 디자인 원본, 점검 결과 보고서)에 대한 대응 경험을 보유하고 있습니다.
+
+**Q2. 프론트엔드 개발 프로젝트 자료를 보내주시기 바랍니다.**
+
+상세 제안서(견적서, 공수계산서, PRD, 일정 제안, 유사 프로젝트 경험)를 별도 페이지로 준비하였습니다. 아래 링크에서 확인해 주시기 바랍니다.
+
+▶ 제안서 상세 페이지: https://proposal-router.claude-ai-b27.workers.dev/proposal-rn-barrier-free-mobile-app/
+▶ 위시켓 포트폴리오: https://www.wishket.com/partners/p/blueverse1/
+
+추가 자료가 필요하시면 미팅 시 GitHub 레포지토리 권한 부여 또는 화면 공유 데모를 통해 실제 코드/디자인 원본을 제시해 드리겠습니다.
+
+### 6.5 지원 내용 (전체)
+
+```
+안녕하세요, React Native 기반 모바일앱 배리어프리 프론트엔드 개발 프로젝트에 지원합니다.
+
+본 프로젝트에 대한 상세 제안서(견적서, 공수계산서, PRD, 일정, 포트폴리오)를 별도 페이지로 준비하였습니다. 아래 링크에서 확인해 주시면 감사하겠습니다.
+▶ 제안서 상세 페이지: https://proposal-router.claude-ai-b27.workers.dev/proposal-rn-barrier-free-mobile-app/
+▶ 위시켓 포트폴리오: https://www.wishket.com/partners/p/blueverse1/
+
+---
+
+<프로젝트 진행 제안>
+
+■ 프로젝트 분석
+- 기 구축·기획된 모바일 앱 기반의 '배리어프리(Barrier-Free)' 인증 대응 프로젝트
+- 자사 백엔드/관리자 페이지 과업 제외 → 순수 프론트엔드(UI/UX 고도화 + RN 화면 개발)에 집중
+- 핵심 기술: React Native (Android + iOS 동시 대응)
+- 적용 기준: KS X 1003 (모바일 앱 접근성), WCAG 2.1 AA
+- 1순위 산출물 완성도 — 디자인 원본 + 소스 코드 + 접근성 점검 결과 보고서 일체 인계
+
+■ 작업 일정
+
+[Phase 1. 분석 & 디자인 매핑] Day 1–5
+- 기존 앱 화면 분석, KS X 1003 / WCAG 2.1 가이드 매핑
+- 화면별 접근성 적용 매트릭스 작성, 디자인 토큰(색 대비·간격·터치 타깃) 재정의
+
+[Phase 2. UI/UX 디자인 고도화] Day 6–12
+- Figma 기반 컴포넌트 크기·간격·대비 재정의
+- 화면별 디자인 고도화 및 핸드오프
+
+[Phase 3. React Native FE 개발] Day 13–24
+- 공통 컴포넌트 접근성 속성 적용 (accessibilityLabel/Hint/Role, 포커스 순서)
+- 화면별 RN 구현, 동적 폰트 스케일 및 색상 모드 대응
+- TalkBack(Android) / VoiceOver(iOS) 음성 흐름 검증
+
+[Phase 4. 연동 & QA] Day 25–30
+- 자사 백엔드 API 연동 및 통합 테스트
+- Accessibility Scanner / Accessibility Inspector 점검
+- Android/iOS 빌드 산출, 점검 결과 보고서 정리
+
+■ 마일스톤 및 산출물
+- M1 (Day 5): 배리어프리 적용 매트릭스 및 컴포넌트 정의안 승인
+- M2 (Day 12): 배리어프리 적용 Figma 디자인 원본 파일 승인
+- M3 (Day 24): 전 화면 빌드 가능, 접근성 속성 일관 적용 확인
+- M4 (Day 30): UI/UX 디자인 원본 + 프론트엔드 소스 코드 + 접근성 점검 결과 보고서 인계
+
+■ 미팅 시 협의 필요 사항
+- 기존 앱 화면 수 및 디자인 고도화 범위 확정 (화면 리스트, 우선순위)
+- 자사 백엔드 API 명세 및 연동 일정
+- 인증 심사 신청 일정 및 산출물 양식 요건
+- 기존 디자인 원본(Figma) 접근 권한 및 작업 방식
+
+---
+
+<유사 프로젝트 진행 경험>
+
+▶ 필라테스 프랜차이즈 통합 앱 (2019.09 ~ 2019.12)
+- 프로젝트 유형: B2B2C 모바일 앱 / O2O / 피트니스 / 프랜차이즈
+- 핵심 기능: 수업 예약, 강사 관리, 출결, 결제, CRM, 커뮤니티 (3 플랫폼 동시 출시)
+- 유사점: 본 공고의 핵심 기술인 React Native 정확 일치, Android/iOS 동시 출시 직접 수행
+- 기술 스택: React Native, React, Node.js, JavaScript
+
+▶ 사주 기반 운세 앱 (2024.07 ~ 2024.09)
+- 프로젝트 유형: B2C 모바일 앱 / 라이프스타일 / 광고 수익화
+- 핵심 기능: 사주 분석 엔진 연동, SSO 로그인, 포인트 리워드, 다국어, 자체 광고 SDK
+- 유사점: 기획·디자인·개발 단일 책임으로 3개월 내 상용화 → 30일 내 안정적 납품 가능성 입증, 305 Dart 파일·12+ 화면 규모를 단독 수행
+- 기술 스택: Flutter 3.22, Dart, Firebase, BLoC, Retrofit, Figma, Node.js
+
+▶ 소셜 캘린더 앱 (2025.01 ~ )
+- 프로젝트 유형: B2C 모바일 앱 / 소셜 / 일정 관리
+- 핵심 기능: 소셜+캘린더 융합, QR 오프라인 디스커버리, 듀얼 백엔드, 7종 알림
+- 유사점: 45+ 스크린 규모 단독 설계·구현, 다양한 인터랙션 패턴에 대한 접근성 적용 베이스 보유
+- 기술 스택: Flutter 3.27, Firebase, Supabase, Provider
+
+---
+
+<사용 기술과 툴>
+
+▶ 개발 기술
+- React Native, TypeScript, React Navigation, Reanimated
+- 상태/통신: React Query, Axios
+- 디자인: Figma (디자인 토큰, 컴포넌트 라이브러리)
+- 접근성 검증: Accessibility Scanner (Android), Accessibility Inspector (iOS)
+- 빌드: Hermes 엔진, Android Studio, Xcode
+
+▶ 개발 도구 및 인프라
+- 버전 관리: GitHub (Private Repo, 의뢰사 권한 부여)
+- CI/CD: GitHub Actions (선택적, 의뢰사 환경에 맞춰 협의)
+- 코드 품질: ESLint, Prettier, TypeScript strict 모드
+- 산출물 관리: Figma 공유, GitHub Issues
+
+▶ 커뮤니케이션
+- 일일 진행 공유: Slack 또는 카카오톡
+- 주간 미팅: Zoom / Google Meet
+- 문서 공유: Notion 또는 Google Docs
+- 이슈 트래킹: GitHub Issues
+```
+
+### 6.6 관련 포트폴리오 추천 (위시켓 폼)
+
+1. **필라테스 프랜차이즈 통합 앱** — React Native 기반 Android/iOS/Web 3 플랫폼 동시 출시 직접 매칭 사례
+2. **사주 기반 운세 앱** — 크로스플랫폼 모바일 앱을 기획·디자인·개발 단일 책임으로 3개월 내 상용화한 신뢰성 입증
+3. **소셜 캘린더 앱** — 45+ 스크린 규모 모바일 앱 단독 설계·구현, 접근성 적용 베이스 경험
