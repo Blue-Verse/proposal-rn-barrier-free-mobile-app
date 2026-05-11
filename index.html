@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="React Native 기반 모바일앱 배리어프리 프론트엔드 개발 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+
+    .text-xs { font-size: 1rem !important; }
+
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>React Native 기반 모바일앱 배리어프리 프론트엔드 개발 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">React Native 기반 모바일앱 배리어프리 프론트엔드 개발</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <main class="min-w-0">
+
+        <!-- PAGE: Home -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">React Native 기반 모바일앱 배리어프리 프론트엔드 개발</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">배리어프리 인증 기준(KS X 1003 / WCAG 2.1 AA)에 부합하는 React Native 모바일 앱 UI/UX 고도화 및 프론트엔드 개발. 기존 화면 기반 접근성 표준 적용, Android·iOS 동시 대응, 자사 백엔드 연동까지 30일 내 완수합니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">4,500,000원</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">30일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">모바일 앱 · 배리어프리</span>
+              <a href="https://www.wishket.com/project/155217/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">프로젝트 분석, 핵심 요구사항 정리, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능 요구사항 정의서, 사용자 스토리, 기술 제약</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">유사 프로젝트 수행 경험 및 기술 스택</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">10+</p>
+              <p class="mt-1 text-sm text-slate-500">모바일/웹 프로젝트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">RN</p>
+              <p class="mt-1 text-sm text-slate-500">Android/iOS 동시 출시 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100%</p>
+              <p class="mt-1 text-sm text-slate-500">디자인부터 개발까지 단일 책임</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">WCAG 2.1</p>
+              <p class="mt-1 text-sm text-slate-500">/ KS X 1003 가이드 적용</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- PAGE: 프로젝트 소개 -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>기 구축된 모바일 앱의 배리어프리 인증을 위한 UI/UX 고도화 및 React Native 프론트엔드 개발. 백엔드 및 관리자 페이지는 의뢰사 자체 수행으로 제외되며, 순수 프론트엔드 영역의 디자인 수정과 화면 개발에 집중합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/155217/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">React Native 기반 모바일앱 배리어프리 프론트엔드 개발</a></td></tr>
+                <tr><td>카테고리</td><td>모바일 앱 (Android/iOS) · 배리어프리(접근성) 인증</td></tr>
+                <tr><td>제안 금액</td><td>4,500,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>30일 (2026.06.01 ~ 2026.06.30)</td></tr>
+                <tr><td>핵심 기술</td><td>React Native, TypeScript, Figma, Android, iOS</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li>배리어프리(접근성) 인증 기준에 맞춘 UI/UX 디자인 고도화 — 아이콘, 간격, 컴포넌트 크기 재배치</li>
+                <li>React Native 환경 화면 및 컴포넌트 개발 — Android, iOS 동시 대응</li>
+                <li>자사 백엔드 개발자와 협업하여 API 연동 및 테스트 진행</li>
+                <li>KS X 1003 (모바일 앱 접근성) / WCAG 2.1 AA 기반 디자인 가이드라인 준수</li>
+                <li>산출물: UI/UX 디자인 원본 파일(Figma) + 프론트엔드 소스 코드</li>
+                <li>정부지원사업 산출물 표준 대응 가능</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <h3>1. React Native 기반 Android/iOS 동시 출시 직접 수행 경험</h3>
+              <p>유사한 React Native 프로젝트(피트니스 프랜차이즈 통합 앱)에서 Android, iOS, Web 3 플랫폼을 동시에 설계·개발·런칭한 경험을 보유하고 있습니다. 단일 코드베이스 운영과 플랫폼 분기 처리, 빌드/배포 파이프라인 구성 노하우를 즉시 적용할 수 있습니다.</p>
+
+              <h3>2. 배리어프리 가이드라인 기반 컴포넌트 설계</h3>
+              <p>본 프로젝트의 핵심은 "기능 추가"가 아닌 "접근성 표준 적용"입니다. 기존 화면 기반으로 다음 항목을 체계적으로 적용합니다.</p>
+              <ul>
+                <li>색 대비비 4.5:1 이상 확보 — 디자인 토큰 재정의</li>
+                <li>최소 터치 타깃 44×44pt — 모든 인터랙티브 요소</li>
+                <li>스크린리더(TalkBack / VoiceOver) 음성 안내 — accessibilityLabel / Hint / Role 일관 적용</li>
+                <li>동적 폰트 스케일 — 시스템 폰트 확대 시 레이아웃 깨짐 방지</li>
+                <li>포커스 순서 명시 — 키보드/스위치 컨트롤 접근성</li>
+              </ul>
+
+              <h3>3. UI/UX 디자인부터 프론트엔드 개발까지 단일 책임</h3>
+              <p>Figma 디자인 원본 작업과 React Native 구현을 동일 작업자가 수행하므로, 디자인-개발 간 핸드오프 손실이 없습니다. 배리어프리 적용 시 발생하는 미세한 간격/색상/폰트 조정 의사결정이 즉시 반영됩니다.</p>
+
+              <h3>4. 정부지원사업 산출물 표준 대응</h3>
+              <p>정부지원 연구과제 및 인증 심사 대비 산출물 양식(소스코드 일체, 디자인 원본 파일, 테스트 결과 보고서, 접근성 점검 결과)을 표준화하여 인계합니다.</p>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">React Native</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">React Navigation</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Reanimated</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">React Query / Axios</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Android Studio</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Xcode</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Accessibility Scanner</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Accessibility Inspector</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion / Google Docs</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub Issues</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 견적서 -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 공고에 명시된 과업 범위(UI/UX 디자인 고도화 + React Native FE 개발, 백엔드 제외)를 기준으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>React Native 기반 모바일앱 배리어프리 프론트엔드 개발</td></tr>
+                <tr><td>제안 금액</td><td><strong>4,500,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>30일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획</td><td>배리어프리 가이드(KS X 1003) 분석 및 화면별 적용 매트릭스 작성</td><td>1식</td><td>-</td><td>350,000원</td></tr>
+                  <tr><td>디자인</td><td>Figma 기반 UI/UX 고도화 (컴포넌트 크기·간격·대비 재정의, 화면 디자인 수정)</td><td>1식</td><td>-</td><td>1,200,000원</td></tr>
+                  <tr><td>프론트엔드</td><td>React Native 화면/컴포넌트 구현, 접근성 속성 적용, 동적 폰트·스크린리더 대응</td><td>1식</td><td>-</td><td>2,300,000원</td></tr>
+                  <tr><td>백엔드 연동</td><td>자사 백엔드 API 연동 및 통합 테스트</td><td>1식</td><td>-</td><td>350,000원</td></tr>
+                  <tr><td>QA/배포</td><td>접근성 검증 도구 점검, Android/iOS 빌드 산출</td><td>1식</td><td>-</td><td>300,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>4,500,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li>클라이언트 제시 예산: 5,000,000원</li>
+                <li>제안 금액: 4,500,000원 — 제시 예산 내 책정</li>
+                <li>백엔드 및 관리자 페이지 과업 제외(자사 수행)로 비용 최적화</li>
+                <li>기존 화면·기획 기반 고도화로 0→1 디자인 대비 효율적 진행</li>
+                <li>유사 React Native 멀티 플랫폼 출시 경험 보유로 학습 곡선 최소화</li>
+                <li>정부지원사업 산출물 표준(소스코드, 디자인 원본, 점검 결과) 포함</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>UI/UX 디자인 원본 파일 (Figma 프로젝트 공유)</li>
+                <li>프론트엔드 소스 코드 (GitHub 또는 압축 본 인계)</li>
+                <li>배리어프리 점검 결과 보고서 (Accessibility Scanner / Inspector 캡처 포함)</li>
+                <li>Android/iOS 빌드 산출물 (.aab / .ipa) 1회</li>
+                <li>1개월 무상 하자 보수 (납품 결함 한정)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>백엔드 서버 및 API 신규 개발 (자사 수행)</li>
+                <li>관리자 페이지(Admin) 신규 개발</li>
+                <li>스토어 등록·심사 대행 (계정 정책에 따라 별도 협의)</li>
+                <li>배리어프리 인증 심사 신청·대응 (의뢰사 수행)</li>
+                <li>외부 유료 SDK / 서버 호스팅 / 도메인 비용</li>
+                <li>하자 보수 기간 이후 유지보수</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 공수계산서 -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>본 공수계산서는 30일 기간 내 산출물 완성을 보장할 수 있도록, 기존 화면 기반 고도화의 특성과 React Native 단일 코드베이스의 효율을 반영하여 산출하였습니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획/배리어프리 분석</td><td>2 M/D</td><td>10%</td></tr>
+                <tr><td>UI/UX 디자인 고도화</td><td>5 M/D</td><td>25%</td></tr>
+                <tr><td>프론트엔드 개발 (Android/iOS)</td><td>10 M/D</td><td>50%</td></tr>
+                <tr><td>백엔드 연동</td><td>1.5 M/D</td><td>7.5%</td></tr>
+                <tr><td>QA/배포</td><td>1.5 M/D</td><td>7.5%</td></tr>
+                <tr><th>합계</th><th>20 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="2">기획/설계</td><td>배리어프리 가이드(KS X 1003) 화면별 매핑</td><td>기획</td><td>1</td></tr>
+                  <tr><td>화면별 접근성 적용 매트릭스 작성</td><td>기획</td><td>1</td></tr>
+                  <tr><td rowspan="2">디자인</td><td>컴포넌트 크기·간격·색 대비 재정의 (디자인 토큰)</td><td>디자인</td><td>2</td></tr>
+                  <tr><td>화면별 Figma 디자인 고도화 및 핸드오프</td><td>디자인</td><td>3</td></tr>
+                  <tr><td rowspan="5">프론트엔드 (RN)</td><td>공통 컴포넌트 접근성 속성 적용 (Label/Hint/Role/Focus)</td><td>FE</td><td>2</td></tr>
+                  <tr><td>화면별 React Native 구현 및 디자인 매핑</td><td>FE</td><td>5</td></tr>
+                  <tr><td>TalkBack(Android) / VoiceOver(iOS) 음성 흐름 검증</td><td>FE</td><td>1</td></tr>
+                  <tr><td>동적 폰트 스케일 / 색상 모드 대응</td><td>FE</td><td>1</td></tr>
+                  <tr><td>이미지 대체 텍스트·폼 라벨·오류 메시지 정비</td><td>FE</td><td>1</td></tr>
+                  <tr><td rowspan="2">백엔드 연동</td><td>자사 API 연동 및 데이터 흐름 구현</td><td>FE</td><td>1</td></tr>
+                  <tr><td>자사 BE 개발자와 명세 검수 및 통합 테스트</td><td>FE</td><td>0.5</td></tr>
+                  <tr><td rowspan="2">QA/배포</td><td>Android/iOS 빌드, 실기기 테스트</td><td>QA</td><td>1</td></tr>
+                  <tr><td>Accessibility Scanner / Inspector 점검 및 결과 정리</td><td>QA</td><td>0.5</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준 — 20 M/D × (7/5) ≈ 28 캘린더일 + 버퍼 2일 = 30일</li>
+                <li>버퍼 10~15% 포함 (스크린리더 흐름 검증, 빌드 이슈 대응)</li>
+                <li>유사 React Native 멀티 플랫폼 출시 경험 기반 효율적 개발</li>
+                <li>기존 화면·기획 기반 고도화 특성을 반영하여 0→1 신규 개발 대비 단축</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>본 PRD는 공고에 명시된 과업 범위를 기반으로 구성되었으며, 미팅 시 협의에 따라 상세 내용이 확정됩니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>기 구축·기획된 모바일 앱을 기반으로 '배리어프리(Barrier-Free)' 인증을 획득하기 위한 UI/UX 고도화 및 React Native 프론트엔드 개발 프로젝트입니다.</p>
+              <p>자사 내부에 백엔드 개발자가 존재하므로, 백엔드 및 관리자 페이지 구축은 과업에서 제외되며 순수 프론트엔드(클라이언트) 영역의 디자인 수정과 화면 개발에 집중합니다.</p>
+              <ul>
+                <li>대상 인증: 모바일 앱 접근성(KS X 1003) 기반 배리어프리 인증</li>
+                <li>대상 플랫폼: Android, iOS</li>
+                <li>핵심 기술: React Native</li>
+                <li>1순위 우선순위: 산출물 완성도</li>
+              </ul>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 고려사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>시각 약자 사용자</td><td>스크린리더 의존 또는 저시력</td><td>큰 글씨, 명도 대비, 음성 안내(accessibilityLabel)</td></tr>
+                  <tr><td>청각 약자 사용자</td><td>음성 안내 청취 어려움</td><td>시각적 알림, 자막, 진동 피드백</td></tr>
+                  <tr><td>신체 약자 사용자</td><td>정밀 조작 어려움</td><td>충분한 터치 타깃(44pt+), 제스처 대체</td></tr>
+                  <tr><td>일반 사용자</td><td>표준 사용자</td><td>기존 기능과 동일한 사용 경험 유지</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+              <h3>3.1 기존 앱 화면 UI/UX 디자인 고도화</h3>
+              <ul>
+                <li><strong>[필수]</strong> 화면별 시각 요소(아이콘, 간격, 컴포넌트 크기) 재배치 및 디자인 수정</li>
+                <li><strong>[필수]</strong> 색 대비비(명도 대비) 4.5:1 이상 확보 (일반 텍스트), 3:1 이상 (대형 텍스트)</li>
+                <li><strong>[필수]</strong> 최소 터치 타깃 44×44pt 이상 확보</li>
+                <li><strong>[필수]</strong> 시스템 폰트 스케일(Dynamic Type / Font Scale) 대응</li>
+                <li><strong>[필수]</strong> 아이콘에 텍스트 라벨 또는 대체 텍스트 병행</li>
+              </ul>
+
+              <h3>3.2 배리어프리 기준 React Native 프론트엔드 개발</h3>
+              <ul>
+                <li><strong>[필수]</strong> 모든 인터랙티브 요소에 accessibilityLabel / accessibilityHint / accessibilityRole 적용</li>
+                <li><strong>[필수]</strong> 포커스 순서(accessibilityElementsHidden, importantForAccessibility) 명시</li>
+                <li><strong>[필수]</strong> 스크린리더 흐름 검증 — TalkBack(Android), VoiceOver(iOS)</li>
+                <li><strong>[필수]</strong> 동적 폰트 스케일에 따른 레이아웃 반응형 처리</li>
+                <li><strong>[필수]</strong> 로딩/오류 상태에 대한 LiveRegion(accessibilityLiveRegion) 적용</li>
+                <li><strong>[선택]</strong> 다크 모드 / 고대비 모드 토글 (협의 시 추가)</li>
+              </ul>
+
+              <h3>3.3 내부 백엔드 연동 지원</h3>
+              <ul>
+                <li><strong>[필수]</strong> 자사 백엔드 API 연동 (인증, 데이터 조회·등록 등)</li>
+                <li><strong>[필수]</strong> API 명세 검수 및 응답 데이터 매핑</li>
+                <li><strong>[필수]</strong> 네트워크 오류 시 접근성 알림 및 재시도 처리</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>접근성</td><td>모바일 앱 접근성 기준(KS X 1003), WCAG 2.1 AA 준수</td></tr>
+                  <tr><td>호환성</td><td>Android 10 (API 29) 이상, iOS 14 이상 지원</td></tr>
+                  <tr><td>성능</td><td>화면 전환 300ms 이내, 일반 화면 60fps 유지</td></tr>
+                  <tr><td>빌드</td><td>Hermes 엔진 활성화, 릴리즈 빌드 안정성 확보</td></tr>
+                  <tr><td>코드 품질</td><td>TypeScript strict 모드, ESLint/Prettier 적용</td></tr>
+                  <tr><td>국제화</td><td>한국어 기본 — 추가 언어는 협의 시 결정</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>기존 앱 화면 구성 및 비즈니스 로직 유지 — 접근성 향상 목적 외 기능 변경 없음</li>
+                <li>자사 백엔드 API 명세에 종속 — 명세 변경 시 일정 협의 필요</li>
+                <li>React Native 기반 단일 코드베이스로 Android·iOS 동시 대응</li>
+                <li>인증 심사 대비 산출물 표준화 — 디자인 원본, 소스 코드, 점검 결과 포함</li>
+                <li>네이티브 모듈 신규 개발 필요 시 별도 협의 (현재 범위 외)</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>백엔드 서버 및 API 신규 개발 (의뢰사 자체 수행)</li>
+                <li>관리자 페이지(Admin) 신규 개발</li>
+                <li>기존 기획 범위를 초과하는 신규 기능 추가</li>
+                <li>인증 심사 대행 업무 — 신청·심사 대응은 의뢰사 수행</li>
+                <li>서버 호스팅, 도메인, 외부 유료 SDK 비용</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 일정 제안 -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 30일 (2026.06.01 ~ 2026.06.30) 기준 단계별 마일스톤 및 산출물을 제안합니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1. 분석 & 디자인 매핑</td><td>Day 1–5</td><td>배리어프리 가이드 매핑표, 컴포넌트 재정의 안</td></tr>
+                  <tr><td>Phase 2. UI/UX 디자인 고도화</td><td>Day 6–12</td><td>Figma 디자인 원본 (배리어프리 적용)</td></tr>
+                  <tr><td>Phase 3. React Native FE 개발</td><td>Day 13–24</td><td>RN 화면/컴포넌트 구현, 접근성 속성 적용</td></tr>
+                  <tr><td>Phase 4. 연동 & QA</td><td>Day 25–30</td><td>API 연동, 접근성 검증, Android/iOS 빌드 산출</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">분석 & 디자인 매핑</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 1–5</p>
+                <p class="text-sm leading-7 text-slate-600">기존 앱 화면 분석, KS X 1003 / WCAG 2.1 가이드 매핑, 화면별 접근성 적용 매트릭스 작성</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 배리어프리 적용 매트릭스, 컴포넌트 재정의 안, 디자인 토큰 정의서</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">UI/UX 디자인 고도화</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 6–12</p>
+                <p class="text-sm leading-7 text-slate-600">Figma 기반 컴포넌트 크기/간격/대비 재정의, 화면별 디자인 고도화, 핸드오프 준비</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: Figma 디자인 원본 (배리어프리 적용 완료)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">React Native FE 개발</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 13–24</p>
+                <p class="text-sm leading-7 text-slate-600">공통 컴포넌트 접근성 속성 적용, 화면별 RN 구현, 동적 폰트·색상 모드 대응, 스크린리더 흐름 검증</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: RN 소스 코드 (GitHub 비공개 레포), 화면 단위 빌드 가능 상태</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">연동 & QA</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 25–30</p>
+                <p class="text-sm leading-7 text-slate-600">자사 백엔드 API 연동, 접근성 검증 도구 점검, Android/iOS 빌드 산출, 점검 결과 정리</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 통합 빌드(.aab / .ipa), 접근성 점검 결과 보고서, 최종 인계 패키지</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1. 디자인 가이드 매핑 완료</td><td>Day 5</td><td>배리어프리 적용 매트릭스 및 컴포넌트 정의안 승인</td></tr>
+                  <tr><td>M2. Figma 디자인 고도화 완료</td><td>Day 12</td><td>배리어프리 적용 디자인 원본 파일 승인</td></tr>
+                  <tr><td>M3. FE 개발 완료</td><td>Day 24</td><td>전 화면 빌드 가능, 접근성 속성 일관 적용 확인</td></tr>
+                  <tr><td>M4. 최종 납품</td><td>Day 30</td><td>디자인 원본 + 소스 코드 + 접근성 점검 결과 보고 인계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + 문서</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 포트폴리오 -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 동일한 기술 스택(React Native) 또는 유사한 모바일 앱 도메인에서 수행한 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">React Native</p>
+              <p class="mt-1 text-sm text-slate-500">Android/iOS/Web 동시 출시</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">100%</p>
+              <p class="mt-1 text-sm text-slate-500">기획·디자인·개발 단일 책임</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">45+</p>
+              <p class="mt-1 text-sm text-slate-500">모바일 화면 설계·구현</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">3</p>
+              <p class="mt-1 text-sm text-slate-500">크로스플랫폼 앱 상용화</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Pilates App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2B2C · React Native</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">필라테스 프랜차이즈 통합 앱</h3>
+              <p class="mt-1 text-sm text-slate-400">건강·피트니스 · O2O · 4개월</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>필라테스 프랜차이즈의 회원 예약·결제·CRM·커뮤니티를 통합한 모바일 앱. React Native 단일 코드베이스로 Android, iOS, Web 3개 플랫폼을 동시 설계·개발·상용화하였습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>수업 예약·결제·출결 관리 (회원/강사 분리 플로우)</li>
+                  <li>강사 관리 및 CRM</li>
+                  <li>커뮤니티 및 푸시 알림</li>
+                  <li>Android / iOS / Web 동시 출시</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li><strong>동일한 기술 스택</strong> — React Native 기반 Android/iOS 동시 출시 경험을 그대로 적용 가능</li>
+                  <li>단일 코드베이스에서 플랫폼별 차이(스크린리더 동작, 폰트 스케일 등) 분기 처리 경험</li>
+                  <li>예약·결제 등 폼 입력 화면 다수 — 접근성 라벨링·포커스 순서 적용 노하우 보유</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React Native</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">React</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Node.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">JavaScript</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fortune App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2C 모바일 앱 · Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">사주 기반 운세 앱</h3>
+              <p class="mt-1 text-sm text-slate-400">엔터테인먼트·라이프스타일 · 3개월 (기획·디자인·개발 100%)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>사주(四柱) 분석 엔진 연동, 행운의 번호 추천, 포인트 리워드, 자체 광고 SDK를 탑재한 크로스플랫폼 모바일 앱. 기획-디자인-개발 전 과정을 단일 책임으로 수행하여 3개월 만에 상용화하였습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>사주 분석 엔진 연동, 운세·궁합 분석</li>
+                  <li>Google/Apple 소셜 로그인 (SSO)</li>
+                  <li>포인트·데일리 체크인 리워드 (게이미피케이션)</li>
+                  <li>자체 광고 SDK (flutter_ads) — 광고 수익화</li>
+                  <li>한국어/영어 다국어 지원</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li><strong>크로스플랫폼 모바일 앱 단일 책임 수행</strong> — 기획·디자인·개발을 한 사람이 처리하여 핸드오프 손실 없는 효율 입증</li>
+                  <li>모바일 앱 다국어·접근성 인식 — 폰트 스케일, 라벨링, 텍스트 가독성 고려 경험</li>
+                  <li>3개월 내 상용화 — 본 프로젝트 30일 기간 내 안정적 납품 가능성 입증</li>
+                  <li>305 Dart 파일, ~16,355 LOC 규모 단독 수행 — 기존 화면 기반 고도화는 더 효율적으로 진행 가능</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.22</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Dart</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC / Cubit</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Retrofit + Dio</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar Share -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2C 모바일 앱 · Flutter</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">소셜 캘린더 앱</h3>
+              <p class="mt-1 text-sm text-slate-400">소셜·일정 관리 · 45+ 스크린</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>소셜과 캘린더를 융합한 일정 공유 앱. 45+ 스크린 규모를 단독으로 설계·개발하였으며, QR 오프라인 디스커버리, 7종 알림 등 다양한 UX 패턴을 구현하였습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>소셜+캘린더 융합 (좋아요 = 일정 추가)</li>
+                  <li>QR 오프라인 디스커버리</li>
+                  <li>듀얼 백엔드 (Firebase + Supabase)</li>
+                  <li>7종 알림 시스템</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li>45+ 스크린 규모의 모바일 앱 단독 설계·구현 경험</li>
+                  <li>일정·알림 등 다양한 인터랙션 패턴 — 접근성 적용 시 화면별 적정 라벨/포커스 설계 노하우</li>
+                  <li>모바일 앱 다양한 화면 규격 대응 경험 — 폰트 스케일 변화 시 레이아웃 조정 적용 가능</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.27</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Supabase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Provider</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 React Native 기반 모바일앱 배리어프리 프론트엔드 개발 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
